@@ -5,3 +5,7 @@
 .font-cinzel {
 	font-family: 'Cinzel Decorative', serif;
 }
+
+*{
+  border: solid 1px red;
+}
