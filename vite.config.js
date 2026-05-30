@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vite.dev/config/
 export default defineConfig({
   server: {
-    port:6969
+    port:8080
   },
   plugins: [tailwindcss(), react()],
   resolve: {
