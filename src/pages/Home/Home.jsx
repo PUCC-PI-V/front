@@ -29,6 +29,9 @@ function Home() {
       setLoading(false);
     }
   }
+  const handleClick = () => {
+    alert("o jogo")
+  }
 
   return (
     <>    
@@ -57,14 +60,14 @@ function Home() {
           placeholder="Descreva a sua ideia de tatuagem (ex: Leão realista no antebraço)..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-        />
+        />  
         <button 
           className="bg-red-600 hover:bg-red-700 text-white p-3 rounded font-bold transition-colors disabled:opacity-50"
           onClick={enviarParaIA}
           disabled={loading}
         >
           {loading ? "Calculando orçamento..." : "ENVIAR PARA A IA"}
-        </button>
+        </button> 
         {resposta && (
           <div className="p-4 bg-neutral-800 text-white rounded mt-4 shadow-lg border border-neutral-700">
             <h3 className="text-red-400 font-bold mb-2">Resposta da IA:</h3>
