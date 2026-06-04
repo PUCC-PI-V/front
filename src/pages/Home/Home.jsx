@@ -29,9 +29,6 @@ function Home() {
       setLoading(false);
     }
   }
-  const handleClick = () => {
-    alert("o jogo")
-  }
 
   return (
     <>    

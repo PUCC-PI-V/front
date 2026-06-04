@@ -1,7 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+@theme {
+	--color-vibora-bg: #2e0d0d;
+	--color-vibora-cream: #d9c5b2;
+	--color-vibora-cream-muted: #9a8470;
+}
 
 .font-cinzel {
 	font-family: 'Cinzel Decorative', serif;
+}
+
+.font-vibora-ui {
+	font-family: 'Cormorant Garamond', serif;
 }
