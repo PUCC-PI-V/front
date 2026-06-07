@@ -2,8 +2,13 @@
 @import "tailwindcss";
 
 @theme {
+	--color-vibora-bg: #2e0d0d;
+	--color-vibora-ink: #140808;
+	--color-vibora-surface: #2a1816;
+	--color-vibora-page: #f5f0eb;
 	--color-vibora-cream: #d9c5b2;
 	--color-vibora-cream-muted: #9a8470;
+	--color-vibora-gold: #c9a96e;
 }
 body {
   background-size: cover;
