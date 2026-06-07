@@ -39,7 +39,7 @@ function Login() {
     'font-vibora-ui text-sm font-semibold uppercase tracking-[0.2em] text-vibora-cream'
 
   return (
-    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden bg-vibora-bg text-vibora-cream">
+    <main className="flex h-dvh max-h-dvh flex-col overflow-hidden text-vibora-cream">
       <header className="shrink-0 px-6 pt-6 sm:px-10">
         <button
           type="button"
