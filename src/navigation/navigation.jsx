@@ -2,21 +2,21 @@ import { createBrowserRouter, RouterProvider, useNavigate } from 'react-router-d
 import Home from '@/pages/Home/Home'
 import Login from '@/pages/Admin/Login/Login'
 import Erro404 from '@/pages/Error/Erro404'
-import About from '@/pages/About'
-import FormTattoo from '@/pages/FormTattoo/FormTattoo'
+import AdminPanel from '@/pages/Admin/Panel/AdminPanel'
+import CalculatePage from '@/pages/Admin/Calculate/CalculatePage'
 
 export const ROUTES = {
   HOME: '/',
   ADMIN_LOGIN: '/admin/login',
-  ABOUT: '/About',
-  FORM_TATTOO: '/formTattoo',
+  ADMIN_PANEL: '/admin/panel',
+  ADMIN_CALCULATE: '/admin/calculate/:id',
 }
 
 const router = createBrowserRouter([
   { path: ROUTES.HOME, element: <Home /> },
   { path: ROUTES.ADMIN_LOGIN, element: <Login /> },
-  { path: ROUTES.ABOUT, element: <About /> },
-  { path: ROUTES.FORM_TATTOO, element: <FormTattoo /> },
+  { path: ROUTES.ADMIN_PANEL, element: <AdminPanel /> },
+  { path: ROUTES.ADMIN_CALCULATE, element: <CalculatePage /> },
   { path: '*', element: <Erro404 /> },
 ])
 
@@ -30,8 +30,8 @@ export function useAppNavigation() {
   return {
     goHome: () => navigate(ROUTES.HOME),
     goToAdminLogin: () => navigate(ROUTES.ADMIN_LOGIN),
-    goToAbout: () => navigate(ROUTES.ABOUT),
-    goToFormTattoo: () => navigate(ROUTES.FORM_TATTOO),
+    goToAdminPanel: () => navigate(ROUTES.ADMIN_PANEL),
+    goToCalculate: (id) => navigate(`/admin/calculate/${id}`),
     goTo: (path) => navigate(path),
   }
 }

@@ -18,7 +18,7 @@ function OrnamentDivider() {
 }
 
 function Login() {
-  const { goHome } = useAppNavigation()
+  const { goHome, goToAdminPanel } = useAppNavigation()
 
   useEffect(() => {
     const html = document.documentElement
@@ -69,7 +69,7 @@ function Login() {
             className="mt-10 w-full space-y-6"
             onSubmit={(e) => {
               e.preventDefault()
-              goHome()
+              goToAdminPanel()
             }}
           >
             <div className="grid items-center gap-3 sm:grid-cols-[5.5rem_1fr] sm:gap-x-6">
