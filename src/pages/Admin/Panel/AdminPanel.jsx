@@ -109,7 +109,7 @@ function OrcamentoCard({ orcamento, destaque, onAbrir }) {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col gap-5 p-5">
+      <div className="flex flex-1 flex-col gap-4 p-4 sm:gap-5 sm:p-5">
         <header className="flex items-start gap-4">
           <div
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-vibora-gold/50 bg-vibora-ink/50 font-cinzel text-lg font-bold text-vibora-gold"
@@ -136,7 +136,7 @@ function OrcamentoCard({ orcamento, destaque, onAbrir }) {
           </p>
         </blockquote>
 
-        <footer className="flex items-center justify-between gap-4 rounded-xl bg-black/25 px-4 py-3">
+        <footer className="flex flex-col gap-3 rounded-xl bg-black/25 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
             <p className="font-vibora-ui text-[0.65rem] uppercase tracking-[0.25em] text-vibora-cream-muted">
               Estimativa IA
@@ -164,16 +164,16 @@ function AdminPanel() {
     <div className="min-h-screen bg-vibora-page text-vibora-bg">
       <div className="h-1 bg-vibora-bg" aria-hidden />
 
-      <header className="border-b border-vibora-bg/8 bg-white/70 px-6 py-5 backdrop-blur-sm sm:px-10">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+      <header className="border-b border-vibora-bg/8 bg-white/70 px-4 py-4 backdrop-blur-sm sm:px-6 sm:py-5 lg:px-10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-cinzel text-2xl font-bold sm:text-3xl">Vibora Ink</p>
-            <p className="font-vibora-ui text-sm uppercase tracking-[0.2em] text-neutral-500">
+            <p className="font-cinzel text-xl font-bold sm:text-2xl lg:text-3xl">Vibora Ink</p>
+            <p className="font-vibora-ui text-xs uppercase tracking-[0.2em] text-neutral-500 sm:text-sm">
               Painel de orçamentos
             </p>
           </div>
 
-          <nav className="flex items-center gap-3 sm:gap-5">
+          <nav className="flex flex-wrap items-center gap-3 sm:justify-end sm:gap-5">
             <button
               type="button"
               onClick={goHome}
@@ -192,11 +192,11 @@ function AdminPanel() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
-        <section className="mb-10">
-          <h1 className="font-cinzel text-3xl font-bold sm:text-4xl">Orçamentos</h1>
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+        <section className="mb-8 sm:mb-10">
+          <h1 className="font-cinzel text-2xl font-bold sm:text-3xl lg:text-4xl">Orçamentos</h1>
           <OrnamentDivider />
-          <p className="max-w-lg font-vibora-ui text-lg text-neutral-500">
+          <p className="max-w-lg font-vibora-ui text-base text-neutral-500 sm:text-lg">
             Histórias na fila da agulha — pedidos enviados pelos clientes.
           </p>
 

@@ -5,13 +5,17 @@ export default function Button({ text, onClick }) {
     <button
       onClick={handleClick}
       className="
-        min-w-[10rem]
+        w-full
+        min-w-0
         rounded-full
         border
         border-vibora-cream/70
         bg-transparent
-        px-10
+        px-6
         py-3
+        sm:w-auto
+        sm:min-w-[10rem]
+        sm:px-10
         font-vibora-ui
         text-sm
         font-semibold
