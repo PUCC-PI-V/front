@@ -10,12 +10,6 @@
 	--color-vibora-cream-muted: #9a8470;
 	--color-vibora-gold: #c9a96e;
 }
-body {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
 
 .font-cinzel {
 	font-family: 'Cinzel Decorative', serif;
