@@ -1,5 +1,6 @@
-import { createBrowserRouter, Outlet, RouterProvider, useNavigate } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider, useLocation, useNavigate } from 'react-router-dom'
 import Header from '@/components/Header'
+import { useAdminTokenGuard } from '@/hooks/useAdminTokenGuard'
 import Home from '@/pages/Home/Home'
 import Login from '@/pages/Admin/Login/Login'
 import Erro404 from '@/pages/Error/Erro404'
@@ -21,6 +22,14 @@ function SiteLayout() {
 }
 
 function AdminLayout() {
+  const location = useLocation()
+  const isLoginPage = location.pathname === ROUTES.ADMIN_LOGIN
+  const { isValidating, isAuthorized } = useAdminTokenGuard({ enabled: !isLoginPage })
+
+  if (!isLoginPage && (isValidating || !isAuthorized)) {
+    return null
+  }
+
   return <Outlet />
 }
 

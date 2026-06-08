@@ -1,4 +1,5 @@
 import { useAppNavigation } from '@/navigation/navigation'
+import { clearTokenValidationCache } from '@/scripts/Request/Admin/Token'
 
 const ORCAMENTOS = [
   {
@@ -183,7 +184,12 @@ function AdminPanel() {
             </button>
             <button
               type="button"
-              onClick={goToAdminLogin}
+              onClick={() => {
+                localStorage.removeItem('adminToken')
+                localStorage.removeItem('adminUser')
+                clearTokenValidationCache()
+                goToAdminLogin()
+              }}
               className="rounded-full border border-vibora-bg/30 bg-white px-5 py-1.5 font-vibora-ui text-sm font-semibold uppercase tracking-[0.15em] text-vibora-bg transition-colors hover:border-vibora-bg hover:bg-vibora-bg hover:text-vibora-cream"
             >
               Sair
