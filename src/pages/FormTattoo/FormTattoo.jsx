@@ -55,6 +55,22 @@ function FormTattoo() {
           </div>
 
           <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
+
+          <FormRow label="Nome">
+              <input
+                type="text"
+                className={fieldClass}
+              />
+            </FormRow>
+          
+            <FormRow label="Telefone">
+              <input
+                type="text"
+                placeholder="Ex: (11) 99999-9999"
+                className={fieldClass}
+              />
+            </FormRow>
+
             <FormRow label="Tamanho">
               <select className={fieldClass}>
                 <option>Selecione</option>
@@ -97,6 +113,14 @@ function FormTattoo() {
               <input
                 type="text"
                 placeholder="Ex: parte interna do antebraço..."
+                className={fieldClass}
+              />
+            </FormRow>
+
+            <FormRow label="Descrição">
+              <input
+                type="text"
+                placeholder="Ex: Pássaro realista com flores ao redor..."
                 className={fieldClass}
               />
             </FormRow>
