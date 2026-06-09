@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import caveirao from '@/assets/caveiraomtfoda.jpg'
 import fundo from '@/assets/fundo.png'
 
@@ -32,6 +33,9 @@ const fieldClass =
   'h-11 w-full rounded-md border border-vibora-cream/30 bg-black/20 px-4 font-vibora-ui text-vibora-cream outline-none transition-colors focus:border-vibora-cream/60 sm:h-12'
 
 function FormTattoo() {
+  const [tamanho, setTamanho] = useState('')
+  const [areaTatuada, setAreaTatuada] = useState('')
+
   return (
     <main
       className="min-h-[calc(100dvh-4.5rem)] px-4 py-8 text-vibora-cream sm:px-6 sm:py-10 lg:px-10"
@@ -59,7 +63,10 @@ function FormTattoo() {
           <FormRow label="Nome">
               <input
                 type="text"
+                placeholder="Insira seu nome"
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
           
@@ -68,16 +75,32 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: (11) 99999-9999"
                 className={fieldClass}
+                minLength={11}
+                maxLength={11}
               />
             </FormRow>
 
             <FormRow label="Tamanho">
-              <select className={fieldClass}>
-                <option>Selecione</option>
-                <option>Pequena</option>
-                <option>Média</option>
-                <option>Grande</option>
-                <option>Fechamento</option>
+              <select
+                value={tamanho}
+                onChange={(event) => setTamanho(event.target.value)}
+                className={`${fieldClass} ${tamanho ? 'text-vibora-cream' : 'text-black'}`}
+              >
+                <option value="" disabled className="text-black hover:text-vibora-cream">
+                  Selecione
+                </option>
+                <option value="Pequena" className={tamanho === 'Pequena' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Pequena
+                </option>
+                <option value="Média" className={tamanho === 'Média' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Média
+                </option>
+                <option value="Grande" className={tamanho === 'Grande' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Grande
+                </option>
+                <option value="Fechamento" className={tamanho === 'Fechamento' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Fechamento
+                </option>
               </select>
             </FormRow>
 
@@ -94,18 +117,38 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: realismo, fine line, blackwork..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
 
             <FormRow label="Área tatuada">
-              <select className={fieldClass}>
-                <option>Selecione</option>
-                <option>Braço</option>
-                <option>Antebraço</option>
-                <option>Perna</option>
-                <option>Costela</option>
-                <option>Peito</option>
-                <option>Costas</option>
+              <select
+                value={areaTatuada}
+                onChange={(event) => setAreaTatuada(event.target.value)}
+                className={`${fieldClass} ${areaTatuada ? 'text-vibora-cream' : 'text-black'}`}
+              >
+                <option value="" disabled className="text-black hover:text-vibora-cream">
+                  Selecione
+                </option>
+                <option value="Braço" className={areaTatuada === 'Braço' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Braço
+                </option>
+                <option value="Antebraço" className={areaTatuada === 'Antebraço' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Antebraço
+                </option>
+                <option value="Perna" className={areaTatuada === 'Perna' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Perna
+                </option>
+                <option value="Costela" className={areaTatuada === 'Costela' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Costela
+                </option>
+                <option value="Peito" className={areaTatuada === 'Peito' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Peito
+                </option>
+                <option value="Costas" className={areaTatuada === 'Costas' ? 'text-vibora-cream' : 'text-black hover:text-vibora-cream'}>
+                  Costas
+                </option>
               </select>
             </FormRow>
 
@@ -114,6 +157,8 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: parte interna do antebraço..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
 
@@ -122,6 +167,8 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: Pássaro realista com flores ao redor..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={256}
               />
             </FormRow>
 
