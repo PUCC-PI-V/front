@@ -8,7 +8,6 @@ import {
   DIFICULDADES,
   estimarAreaCm2,
   estimarTempoHoras,
-  formatarDataISO,
   materiaisSugeridos,
   normalizarDificuldade,
 } from '@/utils/budgetCalculate'
@@ -231,7 +230,6 @@ function CalculatePage() {
                 <Dado label="Cliente" valor={pedido.nome || pedido.cliente} />
                 <Dado label="E-mail" valor={pedido.email} />
                 <Dado label="Telefone" valor={pedido.telefone} />
-                <Dado label="Data de nascimento" valor={formatarDataISO(pedido.dataNasc)} />
                 <Dado label="Data do pedido" valor={pedido.data} />
                 <Dado label="Área do corpo" valor={pedido.area} />
                 <Dado label="Local" valor={pedido.local} />
