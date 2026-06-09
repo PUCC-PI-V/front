@@ -1,13 +1,13 @@
 const URL = 'http://127.0.0.1:8000/ia/prompt'
 
-export async function enviarPromptIA(prompt) {
+export async function enviarPromptIA({ input, contexto }) {
   const response = await fetch(URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ input, contexto }),
   })
 
   const data = await response.json().catch(() => ({}))

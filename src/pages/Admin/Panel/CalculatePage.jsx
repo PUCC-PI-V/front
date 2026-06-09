@@ -11,7 +11,7 @@ import {
   materiaisSugeridos,
   normalizarDificuldade,
 } from '@/utils/budgetCalculate'
-import { extrairRespostaIA, montarPromptIA } from '@/utils/iaPrompt'
+import { extrairRespostaIA, montarContextoTatuagem } from '@/utils/iaPrompt'
 
 function formatBRL(valor) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -162,8 +162,10 @@ function CalculatePage() {
     setRespostaIA('')
 
     try {
-      const prompt = montarPromptIA(pedido, perguntaIA)
-      const data = await enviarPromptIA(prompt)
+      const data = await enviarPromptIA({
+        input: perguntaIA.trim(),
+        contexto: montarContextoTatuagem(pedido),
+      })
       setRespostaIA(extrairRespostaIA(data))
     } catch (err) {
       setIaError(err instanceof Error ? err.message : 'Erro ao consultar a IA.')

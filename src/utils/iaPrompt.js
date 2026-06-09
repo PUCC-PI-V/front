@@ -1,22 +1,23 @@
-export function montarPromptIA(pedido, pergunta) {
-  const sombreamento = pedido.sombreamento ? 'sim' : 'não'
-  const colorido = pedido.colorido ? 'sim' : 'não'
+export function montarContextoTatuagem(pedido) {
+  const partes = []
 
-  return [
-    'Contexto da tatuagem:',
-    `Cliente: ${pedido.nome || pedido.cliente || '—'}`,
-    `Descrição: ${pedido.ideia || '—'}`,
-    `Área do corpo: ${pedido.area || '—'}`,
-    `Local: ${pedido.local || '—'}`,
-    `Estilo: ${pedido.estilo || '—'}`,
-    `Tamanho: ${pedido.tamanho || '—'}`,
-    `Sombreamento: ${sombreamento}`,
-    `Colorido: ${colorido}`,
-    `Dificuldade estimada: ${pedido.dificuldade || '—'}`,
-    `Análise da IA: ${pedido.justificativaIA || '—'}`,
-    '',
-    `Pergunta: ${pergunta.trim()}`,
-  ].join('\n')
+  if (pedido.ideia) partes.push(pedido.ideia)
+
+  if (pedido.estilo) partes.push(`estilo ${pedido.estilo}`)
+
+  if (pedido.tamanho) partes.push(`tamanho ${pedido.tamanho}`)
+
+  const local = [pedido.area, pedido.local].filter(Boolean).join(', ')
+  if (local) partes.push(`área ${local}`)
+
+  partes.push(pedido.sombreamento ? 'com sombreamento' : 'sem sombreamento')
+  partes.push(pedido.colorido ? 'colorido' : 'sem colorido')
+
+  if (pedido.dificuldade) partes.push(`dificuldade ${pedido.dificuldade}`)
+
+  if (pedido.justificativaIA) partes.push(pedido.justificativaIA)
+
+  return partes.join(', ')
 }
 
 export function extrairRespostaIA(data) {
