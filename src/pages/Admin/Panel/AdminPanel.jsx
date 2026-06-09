@@ -1,49 +1,14 @@
+import { useEffect, useMemo, useState } from 'react'
 import { useAppNavigation } from '@/navigation/navigation'
+import { getOrçamento } from '@/scripts/Request/get/getOrçamento'
 import { clearTokenValidationCache } from '@/scripts/Request/Admin/Token'
-
-const ORCAMENTOS = [
-  {
-    id: 1,
-    nome: 'Marina Costa',
-    email: 'marina@email.com',
-    ideia: 'Leão realista no antebraço direito, preto e cinza, com olhar intenso.',
-    valor: 'R$ 850,00',
-    status: 'novo',
-    data: '04/06/2026',
-  },
-  {
-    id: 2,
-    nome: 'Lucas Ferreira',
-    email: 'lucas.f@email.com',
-    ideia: 'Serpente enrolada no punho, estilo old school, vermelho e preto.',
-    valor: 'R$ 620,00',
-    status: 'analise',
-    data: '03/06/2026',
-  },
-  {
-    id: 3,
-    nome: 'Beatriz Almeida',
-    email: 'bia.almeida@email.com',
-    ideia: 'Flor de lótus na clavícula, traço fino, somente contorno.',
-    valor: 'R$ 380,00',
-    status: 'respondido',
-    data: '02/06/2026',
-  },
-  {
-    id: 4,
-    nome: 'Thiago Rocha',
-    email: 'thiago.r@email.com',
-    ideia: 'Mandala geométrica nas costas, tamanho médio, preto sólido.',
-    valor: 'R$ 1.200,00',
-    status: 'novo',
-    data: '04/06/2026',
-  },
-]
+import { enriquecerOrcamento, ORCAMENTO_STATUS } from '@/utils/orcamentoStatus'
 
 const STATUS = {
+  recem_chegado: { label: 'Recém-chegado', dot: 'bg-vibora-gold' },
   novo: { label: 'Novo', dot: 'bg-vibora-cream' },
-  analise: { label: 'Em análise', dot: 'bg-vibora-gold' },
-  respondido: { label: 'Respondido', dot: 'bg-vibora-cream/40' },
+  antigo: { label: 'Antigo', dot: 'bg-vibora-cream/60' },
+  velho: { label: 'Velho', dot: 'bg-vibora-cream/40' },
 }
 
 function OrnamentDivider() {
@@ -157,9 +122,56 @@ function OrcamentoCard({ orcamento, destaque, onAbrir }) {
 
 function AdminPanel() {
   const { goHome, goToAdminLogin, goToCalculate } = useAppNavigation()
+  const [orcamentos, setOrcamentos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const novos = ORCAMENTOS.filter((o) => o.status === 'novo').length
-  const destaqueId = ORCAMENTOS.find((o) => o.status === 'novo')?.id
+  useEffect(() => {
+    let cancelled = false
+
+    async function carregarOrcamentos() {
+      const token = localStorage.getItem('adminToken')
+
+      if (!token) {
+        setError('Token não encontrado.')
+        setLoading(false)
+        return
+      }
+
+      try {
+        const data = await getOrçamento(token)
+        if (!cancelled) {
+          setOrcamentos(data.map(enriquecerOrcamento))
+          setError('')
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Erro ao carregar orçamentos.')
+          setOrcamentos([])
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    carregarOrcamentos()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const novos = useMemo(
+    () =>
+      orcamentos.filter(
+        (o) =>
+          o.status === ORCAMENTO_STATUS.RECEM_CHEGADO ||
+          o.status === ORCAMENTO_STATUS.NOVO,
+      ).length,
+    [orcamentos],
+  )
 
   return (
     <div className="min-h-screen bg-vibora-page text-vibora-bg">
@@ -207,25 +219,37 @@ function AdminPanel() {
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <StatPill value={ORCAMENTOS.length} label="Total" />
+            <StatPill value={orcamentos.length} label="Total" />
             <StatPill value={novos} label="Novos" highlight />
           </div>
         </section>
 
+        {loading && (
+          <p className="text-center font-vibora-ui text-neutral-500">Carregando orçamentos...</p>
+        )}
+
+        {error && !loading && (
+          <p className="rounded-xl border border-red-300/40 bg-red-50 px-4 py-3 text-center font-vibora-ui text-sm text-red-800">
+            {error}
+          </p>
+        )}
+
+        {!loading && !error && orcamentos.length === 0 && (
+          <p className="text-center font-vibora-ui text-neutral-500">
+            Nenhum orçamento encontrado.
+          </p>
+        )}
+
         <section className="grid gap-6 sm:grid-cols-2">
-          {ORCAMENTOS.map((orcamento) => (
+          {orcamentos.map((orcamento) => (
             <OrcamentoCard
               key={orcamento.id}
               orcamento={orcamento}
-              destaque={orcamento.id === destaqueId}
+              destaque={orcamento.status === ORCAMENTO_STATUS.RECEM_CHEGADO}
               onAbrir={() => goToCalculate(orcamento.id)}
             />
           ))}
         </section>
-
-        <p className="mt-14 text-center font-vibora-ui text-sm italic text-neutral-400">
-          Dados de exemplo — quando o back-end estiver pronto, os cards virão da API.
-        </p>
       </main>
     </div>
   )
