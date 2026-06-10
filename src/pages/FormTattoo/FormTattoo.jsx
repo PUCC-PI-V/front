@@ -32,6 +32,7 @@ const fieldClass =
   'h-11 w-full rounded-md border border-vibora-cream/30 bg-black/20 px-4 font-vibora-ui text-vibora-cream outline-none transition-colors focus:border-vibora-cream/60 sm:h-12'
 
 function FormTattoo() {
+
   return (
     <main
       className="min-h-[calc(100dvh-4.5rem)] px-4 py-8 text-vibora-cream sm:px-6 sm:py-10 lg:px-10"
@@ -54,20 +55,35 @@ function FormTattoo() {
             <OrnamentDivider />
           </div>
 
-          <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
+          <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5" action="#" method="POST">
 
           <FormRow label="Nome">
               <input
                 type="text"
+                placeholder = "Insira seu nome"
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
           
             <FormRow label="Telefone">
               <input
                 type="text"
-                placeholder="Ex: (11) 99999-9999"
+                placeholder="Ex: (11) 99999-9999 - Somente números e DDD"
                 className={fieldClass}
+                minLength={11}
+                maxLength={11}
+              />
+            </FormRow>
+
+            <FormRow label="Email">
+              <input
+                type="email"
+                placeholder="Ex: email@gmail.com"
+                className={fieldClass}
+                minLength={5}
+                maxLength={45}
               />
             </FormRow>
 
@@ -94,6 +110,8 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: realismo, fine line, blackwork..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
 
@@ -114,6 +132,8 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: parte interna do antebraço..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={45}
               />
             </FormRow>
 
@@ -122,6 +142,8 @@ function FormTattoo() {
                 type="text"
                 placeholder="Ex: Pássaro realista com flores ao redor..."
                 className={fieldClass}
+                minLength={3}
+                maxLength={256}
               />
             </FormRow>
 
