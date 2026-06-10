@@ -18,3 +18,8 @@
 .font-vibora-ui {
 	font-family: 'Cormorant Garamond', serif;
 }
+
+select option {
+	color: var(--color-vibora-bg);
+	background-color: var(--color-vibora-page);
+}

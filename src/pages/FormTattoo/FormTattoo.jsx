@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import caveirao from '@/assets/caveiraomtfoda.jpg'
 import fundo from '@/assets/fundo.png'
+import { submitBudget } from '@/scripts/Request/budget/submit'
+import { montarPayloadBudget } from '@/utils/formTattoo'
 
 function OrnamentDivider() {
   return (
@@ -17,10 +20,13 @@ function OrnamentDivider() {
   )
 }
 
-function FormRow({ label, children }) {
+function FormRow({ label, htmlFor, children }) {
   return (
     <div className="grid gap-2 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-4">
-      <label className="font-vibora-ui text-sm font-semibold uppercase tracking-wider text-vibora-cream">
+      <label
+        htmlFor={htmlFor}
+        className="font-vibora-ui text-sm font-semibold uppercase tracking-wider text-vibora-cream"
+      >
         {label}
       </label>
       {children}
@@ -31,7 +37,72 @@ function FormRow({ label, children }) {
 const fieldClass =
   'h-11 w-full rounded-md border border-vibora-cream/30 bg-black/20 px-4 font-vibora-ui text-vibora-cream outline-none transition-colors focus:border-vibora-cream/60 sm:h-12'
 
+const TAMANHOS = ['Pequena', 'Média', 'Grande', 'Fechamento']
+const AREAS = ['Braço', 'Antebraço', 'Perna', 'Costela', 'Peito', 'Costas']
+
 function FormTattoo() {
+  const [nome, setNome] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [email, setEmail] = useState('')
+  const [tamanho, setTamanho] = useState('')
+  const [sombreamento, setSombreamento] = useState(false)
+  const [colorido, setColorido] = useState(false)
+  const [estilo, setEstilo] = useState('')
+  const [areaTatuada, setAreaTatuada] = useState('')
+  const [regiaoEspecifica, setRegiaoEspecifica] = useState('')
+  const [descricao, setDescricao] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  function handleTelefoneChange(e) {
+    setTelefone(e.target.value.replace(/\D/g, '').slice(0, 11))
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (!tamanho || !areaTatuada) {
+      setError('Selecione o tamanho e a área tatuada.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const payload = montarPayloadBudget({
+        nome,
+        telefone,
+        email,
+        tamanho,
+        sombreamento,
+        colorido,
+        estilo,
+        areaTatuada,
+        regiaoEspecifica,
+        descricao,
+      })
+
+      await submitBudget(payload)
+      setSuccess('Orçamento enviado com sucesso! Entraremos em contato em breve.')
+      setNome('')
+      setTelefone('')
+      setEmail('')
+      setTamanho('')
+      setSombreamento(false)
+      setColorido(false)
+      setEstilo('')
+      setAreaTatuada('')
+      setRegiaoEspecifica('')
+      setDescricao('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao enviar orçamento.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <main
@@ -55,104 +126,165 @@ function FormTattoo() {
             <OrnamentDivider />
           </div>
 
-          <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5" action="#" method="POST">
-
-          <FormRow label="Nome">
+          <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5" onSubmit={handleSubmit}>
+            <FormRow label="Nome" htmlFor="nome">
               <input
+                id="nome"
                 type="text"
-                placeholder = "Insira seu nome"
+                placeholder="Insira seu nome"
                 className={fieldClass}
                 minLength={3}
                 maxLength={45}
-              />
-            </FormRow>
-          
-            <FormRow label="Telefone">
-              <input
-                type="text"
-                placeholder="Ex: (11) 99999-9999 - Somente números e DDD"
-                className={fieldClass}
-                minLength={11}
-                maxLength={11}
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
               />
             </FormRow>
 
-            <FormRow label="Email">
+            <FormRow label="Telefone" htmlFor="telefone">
               <input
+                id="telefone"
+                type="text"
+                inputMode="numeric"
+                placeholder="Ex: 11999999999 — DDD + número"
+                className={fieldClass}
+                minLength={11}
+                maxLength={11}
+                value={telefone}
+                onChange={handleTelefoneChange}
+                required
+              />
+            </FormRow>
+
+            <FormRow label="Email" htmlFor="email">
+              <input
+                id="email"
                 type="email"
                 placeholder="Ex: email@gmail.com"
                 className={fieldClass}
                 minLength={5}
                 maxLength={45}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </FormRow>
 
-            <FormRow label="Tamanho">
-              <select className={fieldClass}>
-                <option>Selecione</option>
-                <option>Pequena</option>
-                <option>Média</option>
-                <option>Grande</option>
-                <option>Fechamento</option>
+            <FormRow label="Tamanho" htmlFor="tamanho">
+              <select
+                id="tamanho"
+                className={fieldClass}
+                value={tamanho}
+                onChange={(e) => setTamanho(e.target.value)}
+                required
+              >
+                <option value="">Selecione</option>
+                {TAMANHOS.map((opcao) => (
+                  <option key={opcao} value={opcao}>
+                    {opcao}
+                  </option>
+                ))}
               </select>
             </FormRow>
 
-            <FormRow label="Sombreamento">
-              <input type="checkbox" className="h-5 w-5 accent-vibora-cream" />
-            </FormRow>
-
-            <FormRow label="Colorido">
-              <input type="checkbox" className="h-5 w-5 accent-vibora-cream" />
-            </FormRow>
-
-            <FormRow label="Estilo de tattoo">
+            <FormRow label="Sombreamento" htmlFor="sombreamento">
               <input
+                id="sombreamento"
+                type="checkbox"
+                className="h-5 w-5 accent-vibora-cream"
+                checked={sombreamento}
+                onChange={(e) => setSombreamento(e.target.checked)}
+              />
+            </FormRow>
+
+            <FormRow label="Colorido" htmlFor="colorido">
+              <input
+                id="colorido"
+                type="checkbox"
+                className="h-5 w-5 accent-vibora-cream"
+                checked={colorido}
+                onChange={(e) => setColorido(e.target.checked)}
+              />
+            </FormRow>
+
+            <FormRow label="Estilo de tattoo" htmlFor="estilo">
+              <input
+                id="estilo"
                 type="text"
                 placeholder="Ex: realismo, fine line, blackwork..."
                 className={fieldClass}
                 minLength={3}
                 maxLength={45}
+                value={estilo}
+                onChange={(e) => setEstilo(e.target.value)}
+                required
               />
             </FormRow>
 
-            <FormRow label="Área tatuada">
-              <select className={fieldClass}>
-                <option>Selecione</option>
-                <option>Braço</option>
-                <option>Antebraço</option>
-                <option>Perna</option>
-                <option>Costela</option>
-                <option>Peito</option>
-                <option>Costas</option>
+            <FormRow label="Área tatuada" htmlFor="area-tatuada">
+              <select
+                id="area-tatuada"
+                className={fieldClass}
+                value={areaTatuada}
+                onChange={(e) => setAreaTatuada(e.target.value)}
+                required
+              >
+                <option value="">Selecione</option>
+                {AREAS.map((opcao) => (
+                  <option key={opcao} value={opcao}>
+                    {opcao}
+                  </option>
+                ))}
               </select>
             </FormRow>
 
-            <FormRow label="Região específica">
+            <FormRow label="Região específica" htmlFor="regiao-especifica">
               <input
+                id="regiao-especifica"
                 type="text"
                 placeholder="Ex: parte interna do antebraço..."
                 className={fieldClass}
                 minLength={3}
                 maxLength={45}
+                value={regiaoEspecifica}
+                onChange={(e) => setRegiaoEspecifica(e.target.value)}
+                required
               />
             </FormRow>
 
-            <FormRow label="Descrição">
+            <FormRow label="Descrição" htmlFor="descricao">
               <input
+                id="descricao"
                 type="text"
                 placeholder="Ex: Pássaro realista com flores ao redor..."
                 className={fieldClass}
                 minLength={3}
                 maxLength={256}
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                required
               />
             </FormRow>
+
+            {error && (
+              <p className="rounded-lg border border-red-400/40 bg-red-950/40 px-4 py-3 text-center font-vibora-ui text-sm text-red-200">
+                {error}
+              </p>
+            )}
+
+            {success && (
+              <p className="rounded-lg border border-emerald-400/40 bg-emerald-950/40 px-4 py-3 text-center font-vibora-ui text-sm text-emerald-200">
+                {success}
+              </p>
+            )}
 
             <div className="flex justify-center pt-4 sm:pt-6">
               <button
                 type="submit"
-                className="w-full rounded-2xl border border-vibora-cream/40 px-8 py-3.5 font-vibora-ui text-base transition hover:bg-vibora-cream/10 sm:w-auto sm:min-w-[16rem] sm:px-10 sm:py-4 sm:text-lg"
+                disabled={loading}
+                className="w-full rounded-2xl border border-vibora-cream/40 px-8 py-3.5 font-vibora-ui text-base transition hover:bg-vibora-cream/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[16rem] sm:px-10 sm:py-4 sm:text-lg"
               >
-                AVANÇAR
+                {loading ? 'ENVIANDO...' : 'AVANÇAR'}
               </button>
             </div>
           </form>

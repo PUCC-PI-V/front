@@ -111,6 +111,8 @@ export function montarPayloadOrcamento({ pedido, calculateInfo, form, totalReais
     tatuagem: pedido.id,
     usuario: usuarioId,
     admin: adminId,
+    email: pedido.email ?? '',
+    nome: pedido.nome || pedido.cliente || '',
     tinta: Number(form.precoTintaCm2) || 0,
     materiais: Number(form.materiais) || 0,
     area: Number(form.areaCm2) || 0,
