@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import caveirao from '@/assets/caveiraomtfoda.jpg'
 import fundo from '@/assets/fundo.png'
 import { submitBudget } from '@/scripts/Request/budget/submit'
@@ -41,8 +41,8 @@ const TAMANHOS = ['Pequena', 'Média', 'Grande', 'Fechamento']
 const AREAS = ['Braço', 'Antebraço', 'Perna', 'Costela', 'Peito', 'Costas']
 
 function FormTattoo() {
+  const telefoneRef = useRef(null)
   const [nome, setNome] = useState('')
-  const [telefone, setTelefone] = useState('')
   const [email, setEmail] = useState('')
   const [tamanho, setTamanho] = useState('')
   const [sombreamento, setSombreamento] = useState(false)
@@ -55,14 +55,25 @@ function FormTattoo() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  function handleTelefoneChange(e) {
-    setTelefone(e.target.value.replace(/\D/g, '').slice(0, 11))
+  function normalizarTelefone(valor) {
+    return String(valor ?? '').replace(/\D/g, '').slice(0, 11)
+  }
+
+  function handleTelefoneInput(e) {
+    e.target.value = normalizarTelefone(e.target.value)
   }
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    const telefoneEnviado = normalizarTelefone(telefoneRef.current?.value)
+
+    if (telefoneEnviado.length < 10 || telefoneEnviado.length > 11) {
+      setError('Informe um telefone válido com DDD (10 ou 11 dígitos).')
+      return
+    }
 
     if (!tamanho || !areaTatuada) {
       setError('Selecione o tamanho e a área tatuada.')
@@ -74,7 +85,7 @@ function FormTattoo() {
     try {
       const payload = montarPayloadBudget({
         nome,
-        telefone,
+        telefone: telefoneEnviado,
         email,
         tamanho,
         sombreamento,
@@ -88,7 +99,7 @@ function FormTattoo() {
       await submitBudget(payload)
       setSuccess('Orçamento enviado com sucesso! Entraremos em contato em breve.')
       setNome('')
-      setTelefone('')
+      if (telefoneRef.current) telefoneRef.current.value = ''
       setEmail('')
       setTamanho('')
       setSombreamento(false)
@@ -143,15 +154,16 @@ function FormTattoo() {
 
             <FormRow label="Telefone" htmlFor="telefone">
               <input
+                ref={telefoneRef}
                 id="telefone"
-                type="text"
-                inputMode="numeric"
-                placeholder="Ex: 11999999999 — DDD + número"
+                name="telefone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="DDD + número, somente dígitos"
                 className={fieldClass}
-                minLength={11}
-                maxLength={11}
-                value={telefone}
-                onChange={handleTelefoneChange}
+                defaultValue=""
+                onInput={handleTelefoneInput}
                 required
               />
             </FormRow>
