@@ -1,4 +1,5 @@
-import caveirao from '@/assets/caveiraomtfoda.jpg'
+import barbara from '@/assets/barbara.jpg'
+import barbaraa from '@/assets/barbaraa.jpeg'
 
 function OrnamentDivider() {
   return (
@@ -30,7 +31,19 @@ function AboutImage() {
   return (
     <div className="relative mx-auto h-[280px] w-[180px] shrink-0 overflow-hidden rounded-3xl border border-vibora-cream/30 shadow-2xl shadow-black/40 sm:h-[360px] sm:w-[220px] lg:h-[420px] lg:w-[250px]">
       <img
-        src={caveirao}
+        src={barbara}
+        alt="Arte da tatuadora"
+        className="size-full object-cover object-[62%_center]"
+      />
+    </div>
+  )
+}
+
+function AboutImagee() {
+  return (
+    <div className="relative mx-auto h-[280px] w-[180px] shrink-0 overflow-hidden rounded-3xl border border-vibora-cream/30 shadow-2xl shadow-black/40 sm:h-[360px] sm:w-[220px] lg:h-[420px] lg:w-[250px]">
+      <img
+        src={barbaraa}
         alt="Arte da tatuadora"
         className="size-full object-cover object-[62%_center]"
       />
@@ -64,7 +77,7 @@ function About() {
           </div>
 
           <div className="hidden lg:block">
-            <AboutImage />
+            <AboutImagee />
           </div>
         </div>
       </section>

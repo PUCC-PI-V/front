@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
-import caveirao from '@/assets/caveiraomtfoda.jpg'
+import braco1 from '@/assets/aa.jpg'
+import braco2 from '@/assets/a.jpg'
 import fundo from '@/assets/fundo.png'
 import { submitBudget } from '@/scripts/Request/budget/submit'
 import { montarPayloadBudget } from '@/utils/formTattoo'
@@ -126,7 +127,7 @@ function FormTattoo() {
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-12 xl:gap-16">
         <div className="relative hidden h-[420px] w-[220px] shrink-0 overflow-hidden rounded-3xl border border-vibora-cream/30 lg:block xl:h-[520px] xl:w-[240px]">
-          <img src={caveirao} alt="Tattoo" className="size-full object-cover object-[62%_center]" />
+          <img src={braco1} alt="Tattoo" className="size-full object-cover object-[62%_center]" />
         </div>
 
         <section className="w-full max-w-2xl">
@@ -303,7 +304,7 @@ function FormTattoo() {
         </section>
 
         <div className="relative hidden h-[420px] w-[220px] shrink-0 overflow-hidden rounded-3xl border border-vibora-cream/30 xl:block xl:h-[520px] xl:w-[240px]">
-          <img src={caveirao} alt="Tattoo" className="size-full object-cover object-[62%_center]" />
+          <img src={braco2} alt="Tattoo" className="size-full object-cover object-[62%_center]" />
         </div>
       </div>
     </main>
