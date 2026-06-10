@@ -120,6 +120,8 @@ export function montarPayloadOrcamento({ pedido, calculateInfo, form, totalReais
     valor_hora: Number(form.valorHora) || 0,
     tempo_estimado: Number(form.tempoHoras) || 0,
     dificuldade: DIFICULDADE_SUBMIT[form.dificuldadeKey] ?? 'Média',
+    sombreamento: Boolean(form.sombreamento),
+    colorido: Boolean(form.colorido),
     valor_orcamento: Math.round(totalReais * 100),
   }
 }

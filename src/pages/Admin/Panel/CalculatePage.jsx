@@ -77,6 +77,8 @@ function CalculatePage() {
   const [tempoHoras, setTempoHoras] = useState('')
   const [taxaFixa, setTaxaFixa] = useState('30')
   const [dificuldadeSelecionada, setDificuldadeSelecionada] = useState('medio')
+  const [sombreamento, setSombreamento] = useState(false)
+  const [colorido, setColorido] = useState(false)
   const [perguntaIA, setPerguntaIA] = useState('')
   const [respostaIA, setRespostaIA] = useState('')
   const [iaLoading, setIaLoading] = useState(false)
@@ -117,6 +119,8 @@ function CalculatePage() {
           setValorHora(valores.valorHora)
           setTempoHoras(valores.tempoHoras)
           setDificuldadeSelecionada(valores.dificuldadeKey)
+          setSombreamento(Boolean(tattoInfo.sombreamento))
+          setColorido(Boolean(tattoInfo.colorido))
           setError('')
         }
       } catch (err) {
@@ -167,10 +171,10 @@ function CalculatePage() {
       tempoHoras,
       taxaFixa,
       dificuldadeKey: dificuldadeSelecionada,
-      sombreamento: pedido.sombreamento,
-      colorido: pedido.colorido,
+      sombreamento,
+      colorido,
     })
-  }, [pedido, precoTintaCm2, areaCm2, materiais, valorHora, tempoHoras, taxaFixa, dificuldadeSelecionada, dificuldade])
+  }, [pedido, precoTintaCm2, areaCm2, materiais, valorHora, tempoHoras, taxaFixa, dificuldadeSelecionada, dificuldade, sombreamento, colorido])
 
   async function handleConfirmarOrcamento() {
     const token = localStorage.getItem('adminToken')
@@ -196,6 +200,8 @@ function CalculatePage() {
           valorHora,
           tempoHoras,
           dificuldadeKey: dificuldadeSelecionada,
+          sombreamento,
+          colorido,
         },
         totalReais: calculo.total,
       })
@@ -222,7 +228,7 @@ function CalculatePage() {
     try {
       const data = await enviarPromptIA({
         input: perguntaIA.trim(),
-        contexto: montarContextoTatuagem(pedido),
+        contexto: montarContextoTatuagem({ ...pedido, sombreamento, colorido }),
       })
       setRespostaIA(extrairRespostaIA(data))
     } catch (err) {
@@ -295,8 +301,8 @@ function CalculatePage() {
                 <Dado label="Local" valor={pedido.local} />
                 <Dado label="Estilo" valor={pedido.estilo} />
                 <Dado label="Tamanho" valor={pedido.tamanho} />
-                <Dado label="Sombreamento" valor={pedido.sombreamento ? 'Sim' : 'Não'} />
-                <Dado label="Colorido" valor={pedido.colorido ? 'Sim' : 'Não'} />
+                <Dado label="Sombreamento (cliente)" valor={pedido.sombreamento ? 'Sim' : 'Não'} />
+                <Dado label="Colorido (cliente)" valor={pedido.colorido ? 'Sim' : 'Não'} />
                 <Dado label="Estimativa IA" valor={pedido.valor} />
               </div>
               <blockquote className="mt-5 border-l-2 border-vibora-gold/50 pl-4">
@@ -398,11 +404,11 @@ function CalculatePage() {
                   />
                 </Campo>
 
-                <Campo label="Materiais (R$)" hint={pedido.colorido ? 'Sugestão maior por colorido' : 'Agulhas, filmes, produtos...'}>
+                <Campo label="Materiais (R$)" hint={colorido ? 'Sugestão maior por colorido' : 'Agulhas, filmes, produtos...'}>
                   <input
                     type="number"
                     min="0"
-                    placeholder={materiaisSugeridos(pedido.colorido)}
+                    placeholder={materiaisSugeridos(colorido)}
                     value={materiais}
                     onChange={(e) => setMateriais(e.target.value)}
                     className={inputClass}
@@ -433,13 +439,13 @@ function CalculatePage() {
 
                 <Campo
                   label="Tempo estimado (h)"
-                  hint={`Sugerido: ${estimarTempoHoras(pedido.tamanho, pedido.sombreamento, pedido.colorido)}h`}
+                  hint={`Sugerido: ${estimarTempoHoras(pedido.tamanho, sombreamento, colorido)}h`}
                 >
                   <input
                     type="number"
                     min="0"
                     step="0.5"
-                    placeholder={String(estimarTempoHoras(pedido.tamanho, pedido.sombreamento, pedido.colorido))}
+                    placeholder={String(estimarTempoHoras(pedido.tamanho, sombreamento, colorido))}
                     value={tempoHoras}
                     onChange={(e) => setTempoHoras(e.target.value)}
                     className={inputClass}
@@ -462,6 +468,36 @@ function CalculatePage() {
                     ))}
                   </select>
                 </Campo>
+
+                <div className="flex flex-col gap-5">
+                  <Campo label="Sombreamento" hint="Defina se a tattoo terá sombra (+10% no cálculo)">
+                    <label className="flex h-11 cursor-pointer items-center gap-3 sm:h-12">
+                      <input
+                        type="checkbox"
+                        checked={sombreamento}
+                        onChange={(e) => setSombreamento(e.target.checked)}
+                        className="h-5 w-5 accent-vibora-bg"
+                      />
+                      <span className="font-vibora-ui text-sm text-vibora-bg">
+                        {sombreamento ? 'Com sombreamento' : 'Sem sombreamento'}
+                      </span>
+                    </label>
+                  </Campo>
+
+                  <Campo label="Colorido" hint="Defina se a tattoo será colorida (+15% no cálculo)">
+                    <label className="flex h-11 cursor-pointer items-center gap-3 sm:h-12">
+                      <input
+                        type="checkbox"
+                        checked={colorido}
+                        onChange={(e) => setColorido(e.target.checked)}
+                        className="h-5 w-5 accent-vibora-bg"
+                      />
+                      <span className="font-vibora-ui text-sm text-vibora-bg">
+                        {colorido ? 'Colorida' : 'Sem cor'}
+                      </span>
+                    </label>
+                  </Campo>
+                </div>
               </div>
             </div>
 
@@ -479,10 +515,10 @@ function CalculatePage() {
                   label={`Mão de obra (${tempoHoras || '—'}h × R$ ${valorHora}/h)`}
                   valor={formatBRL(calculo.custoMaoObra)}
                 />
-                {pedido.sombreamento && (
+                {sombreamento && (
                   <LinhaResumo label="Ajuste sombreamento (+10%)" valor={formatBRL(calculo.ajusteSombra)} />
                 )}
-                {pedido.colorido && (
+                {colorido && (
                   <LinhaResumo label="Ajuste colorido (+15%)" valor={formatBRL(calculo.ajusteCor)} />
                 )}
                 <div className="h-px bg-vibora-bg/10" aria-hidden />
