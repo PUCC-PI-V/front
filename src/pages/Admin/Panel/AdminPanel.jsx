@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAppNavigation } from '@/navigation/navigation'
 import { getOrçamento } from '@/scripts/Request/get/getOrçamento'
 import { clearTokenValidationCache } from '@/scripts/Request/Admin/Token'
+import { formatarCentavosBRL } from '@/utils/budgetCalculate'
 import { enriquecerOrcamento, ORCAMENTO_STATUS } from '@/utils/orcamentoStatus'
 
 const STATUS = {
@@ -58,6 +59,7 @@ function StatPill({ value, label, highlight }) {
 
 function OrcamentoCard({ orcamento, destaque, onAbrir }) {
   const inicial = orcamento.nome.charAt(0)
+  const valorConfirmado = formatarCentavosBRL(orcamento.valor_orcamento)
 
   return (
     <article
@@ -102,14 +104,30 @@ function OrcamentoCard({ orcamento, destaque, onAbrir }) {
           </p>
         </blockquote>
 
-        <footer className="flex flex-col gap-3 rounded-xl bg-black/25 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <div>
-            <p className="font-vibora-ui text-[0.65rem] uppercase tracking-[0.25em] text-vibora-cream-muted">
-              Estimativa IA
-            </p>
-            <p className="font-cinzel text-xl font-bold text-vibora-gold">
-              {orcamento.valor}
-            </p>
+        <footer className="flex flex-col gap-3 rounded-xl bg-black/25 px-4 py-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div className="flex flex-wrap gap-5 sm:gap-6">
+            {valorConfirmado ? (
+              <div>
+                <p className="font-vibora-ui text-[0.65rem] uppercase tracking-[0.25em] text-vibora-cream-muted">
+                  Orçamento confirmado
+                </p>
+                <p className="font-cinzel text-xl font-bold text-vibora-cream">
+                  {valorConfirmado}
+                </p>
+              </div>
+            ) : null}
+            <div>
+              <p className="font-vibora-ui text-[0.65rem] uppercase tracking-[0.25em] text-vibora-cream-muted">
+                Estimativa IA
+              </p>
+              <p
+                className={`font-cinzel text-xl font-bold ${
+                  valorConfirmado ? 'text-vibora-gold/70' : 'text-vibora-gold'
+                }`}
+              >
+                {orcamento.valor}
+              </p>
+            </div>
           </div>
           <time className="shrink-0 rounded-full border border-vibora-cream/20 px-3 py-1 font-vibora-ui text-xs text-vibora-cream-muted">
             {orcamento.data}

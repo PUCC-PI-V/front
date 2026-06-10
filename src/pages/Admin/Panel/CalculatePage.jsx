@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAppNavigation } from '@/navigation/navigation'
 import { getOrcamentoById } from '@/scripts/Request/get/getOrçamento'
 import { enviarPromptIA } from '@/scripts/Request/ia/prompt'
+import { submitOrcamento } from '@/scripts/Request/orcamento/submit'
 import {
   calcularOrcamento,
   DIFICULDADES,
@@ -10,6 +11,9 @@ import {
   estimarTempoHoras,
   materiaisSugeridos,
   normalizarDificuldade,
+  montarPayloadOrcamento,
+  valoresDeCalculateInfo,
+  valoresPadraoCalculo,
 } from '@/utils/budgetCalculate'
 import { extrairRespostaIA, montarContextoTatuagem } from '@/utils/iaPrompt'
 
@@ -62,6 +66,7 @@ function CalculatePage() {
   const { goToAdminPanel } = useAppNavigation()
 
   const [pedido, setPedido] = useState(null)
+  const [calculateInfo, setCalculateInfo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -76,6 +81,9 @@ function CalculatePage() {
   const [respostaIA, setRespostaIA] = useState('')
   const [iaLoading, setIaLoading] = useState(false)
   const [iaError, setIaError] = useState('')
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [submitSuccess, setSubmitSuccess] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -92,17 +100,30 @@ function CalculatePage() {
       try {
         const data = await getOrcamentoById(token, id)
         if (!cancelled) {
-          setPedido(data)
-          setAreaCm2(String(estimarAreaCm2(data.tamanho)))
-          setTempoHoras(String(estimarTempoHoras(data.tamanho, data.sombreamento, data.colorido)))
-          setMateriais(materiaisSugeridos(data.colorido))
-          setDificuldadeSelecionada(normalizarDificuldade(data.dificuldade))
+          const tattoInfo = data.tatto_info ?? data
+          const calcInfo = data.calculate_info ?? null
+
+          setPedido(tattoInfo)
+          setCalculateInfo(calcInfo)
+
+          const valores = calcInfo
+            ? valoresDeCalculateInfo(calcInfo)
+            : valoresPadraoCalculo(tattoInfo)
+
+          setPrecoTintaCm2(valores.precoTintaCm2)
+          setAreaCm2(valores.areaCm2)
+          setMateriais(valores.materiais)
+          setTaxaFixa(valores.taxaFixa)
+          setValorHora(valores.valorHora)
+          setTempoHoras(valores.tempoHoras)
+          setDificuldadeSelecionada(valores.dificuldadeKey)
           setError('')
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'Erro ao carregar orçamento.')
           setPedido(null)
+          setCalculateInfo(null)
         }
       } finally {
         if (!cancelled) {
@@ -150,6 +171,43 @@ function CalculatePage() {
       colorido: pedido.colorido,
     })
   }, [pedido, precoTintaCm2, areaCm2, materiais, valorHora, tempoHoras, taxaFixa, dificuldadeSelecionada, dificuldade])
+
+  async function handleConfirmarOrcamento() {
+    const token = localStorage.getItem('adminToken')
+
+    if (!token) {
+      setSubmitError('Token não encontrado.')
+      return
+    }
+
+    setSubmitLoading(true)
+    setSubmitError('')
+    setSubmitSuccess('')
+
+    try {
+      const payload = montarPayloadOrcamento({
+        pedido,
+        calculateInfo,
+        form: {
+          precoTintaCm2,
+          areaCm2,
+          materiais,
+          taxaFixa,
+          valorHora,
+          tempoHoras,
+          dificuldadeKey: dificuldadeSelecionada,
+        },
+        totalReais: calculo.total,
+      })
+
+      await submitOrcamento(token, payload)
+      setSubmitSuccess(`Orçamento confirmado — ${formatBRL(calculo.total)}`)
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Erro ao confirmar orçamento.')
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
 
   async function handlePerguntarIA() {
     if (!perguntaIA.trim()) {
@@ -311,7 +369,9 @@ function CalculatePage() {
             <div className="rounded-2xl border border-vibora-bg/10 bg-white p-4 shadow-sm sm:p-6">
               <h2 className="font-cinzel text-xl font-bold">Parâmetros de cálculo</h2>
               <p className="mt-2 font-vibora-ui text-sm text-neutral-500">
-                Valores sugeridos com base no pedido. Ajuste conforme necessário.
+                {calculateInfo
+                  ? `Orçamento salvo em ${calculateInfo.data} — valor: ${calculateInfo.valor}. Ajuste se necessário.`
+                  : 'Valores sugeridos com base no pedido. Ajuste conforme necessário.'}
               </p>
 
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -435,11 +495,25 @@ function CalculatePage() {
                 <LinhaResumo label="Valor final" valor={formatBRL(calculo.total)} destaque />
               </div>
 
+              {submitError && (
+                <p className="mt-5 rounded-lg border border-red-300/40 bg-red-50 px-4 py-3 text-center font-vibora-ui text-sm text-red-800">
+                  {submitError}
+                </p>
+              )}
+
+              {submitSuccess && (
+                <p className="mt-5 rounded-lg border border-emerald-300/40 bg-emerald-50 px-4 py-3 text-center font-vibora-ui text-sm text-emerald-800">
+                  {submitSuccess}
+                </p>
+              )}
+
               <button
                 type="button"
-                className="mt-6 w-full rounded-full border border-vibora-bg bg-vibora-bg py-3 font-vibora-ui text-sm font-semibold uppercase tracking-[0.2em] text-vibora-cream transition-colors hover:bg-vibora-ink"
+                onClick={handleConfirmarOrcamento}
+                disabled={submitLoading}
+                className="mt-6 w-full rounded-full border border-vibora-bg bg-vibora-bg py-3 font-vibora-ui text-sm font-semibold uppercase tracking-[0.2em] text-vibora-cream transition-colors hover:bg-vibora-ink disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Confirmar orçamento
+                {submitLoading ? 'Confirmando...' : 'Confirmar orçamento'}
               </button>
             </div>
           </section>

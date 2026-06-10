@@ -5,13 +5,28 @@ export const DIFICULDADES = {
   muito_dificil: { label: 'Muito difícil', mult: 1.5, cor: 'bg-red-100 text-red-800 border-red-200' },
 }
 
+export const DIFICULDADE_SUBMIT = {
+  facil: 'Fácil',
+  medio: 'Média',
+  dificil: 'Alta',
+  muito_dificil: 'Muito Alta',
+}
+
+function textoSemAcentos(texto) {
+  return (texto ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
+
 export function normalizarDificuldade(dificuldade) {
-  const valor = dificuldade?.toLowerCase() ?? ''
+  const valor = textoSemAcentos(dificuldade)
 
   if (valor.includes('muito')) return 'muito_dificil'
-  if (valor.includes('alta') || valor.includes('dif')) return 'dificil'
+  if (valor.includes('alta') || valor.includes('dificil')) return 'dificil'
   if (valor.includes('med')) return 'medio'
-  return 'facil'
+  if (valor.includes('facil')) return 'facil'
+  return 'medio'
 }
 
 export function estimarAreaCm2(tamanho) {
@@ -41,11 +56,70 @@ export function materiaisSugeridos(colorido) {
   return colorido ? '60' : '45'
 }
 
+export function valoresPadraoCalculo(tattoInfo) {
+  return {
+    precoTintaCm2: '20',
+    areaCm2: String(estimarAreaCm2(tattoInfo.tamanho)),
+    materiais: materiaisSugeridos(tattoInfo.colorido),
+    taxaFixa: '30',
+    valorHora: '120',
+    tempoHoras: String(estimarTempoHoras(tattoInfo.tamanho, tattoInfo.sombreamento, tattoInfo.colorido)),
+    dificuldadeKey: normalizarDificuldade(tattoInfo.dificuldade),
+  }
+}
+
+export function valoresDeCalculateInfo(calculateInfo) {
+  return {
+    precoTintaCm2: String(calculateInfo.tinta ?? ''),
+    areaCm2: String(calculateInfo.area ?? ''),
+    materiais: String(calculateInfo.materiais ?? ''),
+    taxaFixa: String(calculateInfo.taxa_fixa ?? ''),
+    valorHora: String(calculateInfo.valor_hora ?? ''),
+    tempoHoras: String(calculateInfo.tempo_estimado ?? ''),
+    dificuldadeKey: normalizarDificuldade(calculateInfo.dificuldade),
+  }
+}
+
+export function formatarCentavosBRL(centavos) {
+  if (centavos == null || centavos === '') return null
+  const reais = Number(centavos) / 100
+  if (Number.isNaN(reais)) return null
+  return reais.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
 export function formatarDataISO(dataISO) {
   if (!dataISO) return '—'
   const [ano, mes, dia] = dataISO.split('-')
   if (!ano || !mes || !dia) return dataISO
   return `${dia}/${mes}/${ano}`
+}
+
+export function obterAdminId() {
+  try {
+    const user = JSON.parse(localStorage.getItem('adminUser') || '{}')
+    return user.id ?? user.usuario_id ?? null
+  } catch {
+    return null
+  }
+}
+
+export function montarPayloadOrcamento({ pedido, calculateInfo, form, totalReais }) {
+  const adminId = calculateInfo?.admin ?? obterAdminId()
+  const usuarioId = calculateInfo?.usuario ?? pedido.usuario_id
+
+  return {
+    tatuagem: pedido.id,
+    usuario: usuarioId,
+    admin: adminId,
+    tinta: Number(form.precoTintaCm2) || 0,
+    materiais: Number(form.materiais) || 0,
+    area: Number(form.areaCm2) || 0,
+    taxa_fixa: Number(form.taxaFixa) || 0,
+    valor_hora: Number(form.valorHora) || 0,
+    tempo_estimado: Number(form.tempoHoras) || 0,
+    dificuldade: DIFICULDADE_SUBMIT[form.dificuldadeKey] ?? 'Média',
+    valor_orcamento: Math.round(totalReais * 100),
+  }
 }
 
 export function calcularOrcamento({
